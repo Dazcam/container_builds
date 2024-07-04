@@ -1,0 +1,42 @@
+Bootstrap: docker
+From: bioconductor/bioconductor_docker:devel
+
+%labels
+    Version v0.0.1
+
+%help
+    This is a container to run Seurat 5 on Hawk
+
+%post
+    # Update the image
+    apt update
+    apt upgrade -y
+
+    # for igraph
+    apt install -y glpk-utils libglpk-dev
+
+    # for sctransform
+    apt install -y libicu-dev
+
+    # for BPCells
+    apt install -y libhdf5-dev
+
+    # Install R packages
+    R --no-echo -e 'remotes::install_github("bnprks/BPCells")'
+    R --no-echo -e 'BiocManager::install("glmGamPoi")'
+    R --no-echo -e 'install.packages("RPresto")'
+    R --no-echo -e 'install.packages("Seurat")'
+    R --no-echo -e 'setRepositories(ind=1:3)' # Needed to automatically install Bioconductor dependencies for Signac
+    R --no-echo -e 'install.packages(c("R.utils", "Signac"))'
+    R --no-echo -e 'remotes::install_github("satijalab/seurat-wrappers")'
+    R --no-echo -e 'remotes::install_github("satijalab/azimuth")'
+    R --no-echo -e 'BiocManager::install(c("scuttle", "scater"))'
+    R --no-echo -e 'install.packages(c("scCustomize", "readxl", "harmony")'
+
+    # Additonal packages for hdWGCNA scripts 
+    R --no-echo -e 'BiocManager::install(c("WGCNA", "igraph", "devtools", "GeneOverlap", "ggrepel", "UCell"))'
+    R --no-echo -e 'devtools::install_github("NightingaleHealth/ggforestplot")'
+    R --no-echo -e 'devtools::install_github('smorabit/hdWGCNA', ref='dev')'
+    R --no-echo -e 'install.packages(c("tidyverse", "kableExtra"))'
+
+    apt clean
