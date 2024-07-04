@@ -1,1 +1,19 @@
+Bootstrap: library
+From: library://ncherric/iliad/igdp-container
+
+%labels
+
+	Version v0.0.1
+
+%help
+
+	Container to run bcftools plugins to
+
+%post
+
+	wget -P /usr/bin/bcftools-1.16/plugins https://raw.githubusercontent.com/freeseek/gtc2vcf/master/idat2gtc.c
+	make -C /usr/bin/bcftools-1.16/
+	/bin/cp /usr/bin/bcftools-1.16/bin//bcftools /usr/bin/bcftools-1.16/plugins/idat2gtc.so bin/
+	
+	apt clean
 
