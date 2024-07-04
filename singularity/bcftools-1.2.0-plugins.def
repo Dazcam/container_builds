@@ -1,0 +1,36 @@
+Bootstrap: docker 
+From: ubuntu:22.04 
+
+%environment
+	TZ=UTC
+	DEBIAN_FRONTEND=noninteractive
+
+%post 
+  export TZ=UTC
+  export DEBIAN_FRONTEND=noninteractive
+	apt-get update -y 
+	apt-get install -y libbz2-dev libssl-dev liblzma-dev libgsl0-dev make bzip2 libcurl4-openssl-dev
+	apt-get install -y wget unzip git g++ zlib1g-dev bwa unzip samtools 
+	
+	wget -P tmp/ https://github.com/samtools/bcftools/releases/download/1.20/bcftools-1.20.tar.bz2 
+	tar xjvf tmp/bcftools-1.20.tar.bz2 -C tmp
+	
+	/bin/rm -f tmp/bcftools-1.20/plugins/idat2gtc.c 
+	/bin/rm -f tmp/bcftools-1.20/plugins/gtc2vcf.c 
+	/bin/rm -f tmp/bcftools-1.20/plugins/gtc2vcf.h 
+	/bin/rm -f tmp/bcftools-1.20/plugins/affy2vcf.c 
+
+	wget -P tmp/bcftools-1.20/plugins https://raw.githubusercontent.com/freeseek/gtc2vcf/master/idat2gtc.c 
+	wget -P tmp/bcftools-1.20/plugins https://raw.githubusercontent.com/freeseek/gtc2vcf/master/gtc2vcf.c 
+	wget -P tmp/bcftools-1.20/plugins https://raw.githubusercontent.com/freeseek/gtc2vcf/master/gtc2vcf.h 
+	wget -P tmp/bcftools-1.20/plugins https://raw.githubusercontent.com/freeseek/gtc2vcf/master/affy2vcf.c 
+	 
+	make -C tmp/bcftools-1.20/ 
+
+	/bin/cp tmp/bcftools-1.20/bcftools bin/ 
+	/bin/cp tmp/bcftools-1.20/plugins/idat2gtc.so bin/ 
+	/bin/cp tmp/bcftools-1.20/plugins/gtc2vcf.so bin/ 
+	/bin/cp tmp/bcftools-1.20/plugins/affy2vcf.so bin/
+
+  echo 'export PATH="/bin/:$PATH"' >> $SINGULARITY_ENVIRONMENT
+  echo 'export BCFTOOLS_PLUGINS="/bin/"' >> $SINGULARITY_ENVIRONMENT
