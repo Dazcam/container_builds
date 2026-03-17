@@ -35,3 +35,7 @@ From: bioconductor/bioconductor_docker
 %runscript 
 	echo "GenotypeQCtoHRC Singularity container. Use 'singularity exec Rscript ...' to run the pipeline." 
 	exec /bin/bash "$@"
+
+%labels
+    Maintainer: Dazcam
+    Description: Singularity container with GenotypeQCtoHRC and subsidiary packages for sn-eQTL-project
